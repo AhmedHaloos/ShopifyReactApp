@@ -21,7 +21,8 @@ function getAllCustomers() {
       headers: {
         "content-type": "application/json, charset=utf-8",
         'X-Shopify-Access-Token': `${token}`,
-        'Authorization': apiKey
+       
+        // 'Authorization': apiKey
 
       },
 
@@ -41,10 +42,7 @@ function App() {
 
      console.log(res.data);
    })
-  .catch((e)=>{
-  console.log(e);
-
-  })
+ 
 
 
 }, []);

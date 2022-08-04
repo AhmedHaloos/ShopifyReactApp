@@ -13,6 +13,23 @@ const apiKey = "f9435203660033c2fe73a34c23ffd4dd";// iti-ism
 const passsword = "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"//iti-ism
 
 
+function getAllProducts() {
+
+    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}.json`
+    return axios(
+        {
+            method: 'get',
+            url: apiUrl,
+            headers: {
+                "content-type": "application/json, charset=utf-8",
+                'X-Shopify-Access-Token': `${token}`,
+            },
+
+        })
+
+}
+
+
 
 app.use(async (req, res, next)=>{
 

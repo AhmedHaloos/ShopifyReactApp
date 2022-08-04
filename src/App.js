@@ -65,6 +65,7 @@ function App() {
 
    })
    .then((res)=>{
+    console.log("response");
       console.log(res.data['products']);
    })
    .catch((e)=>{

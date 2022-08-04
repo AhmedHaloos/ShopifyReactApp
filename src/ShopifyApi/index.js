@@ -38,7 +38,11 @@ app.get('/products',  (req, res)=>{
             console.error(e.response);
             res.send('error')
     })
+})
 
+app.get('/customers', (req, res)=>{
+
+    res.send('customers')
 
 })
 

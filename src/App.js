@@ -61,11 +61,11 @@ function App() {
     console.log("front");
    axios({
     method:'get', 
-    url:'/products', 
+    url:'/customers', 
 
    })
    .then((res)=>{
-      console.log(res.data["products"]);
+      console.log(res);
    })
    .catch((e)=>{
     console.log(e.message);

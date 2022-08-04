@@ -65,7 +65,7 @@ function App() {
 
    })
    .then((res)=>{
-      console.log(res.data);
+      console.log(res.body);
    })
    .catch((e)=>{
     console.log(e.message);

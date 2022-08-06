@@ -240,6 +240,20 @@ app.route('/orders/:orderId')
     })
     .put((req, res) => {
 
+        const id = req.params.orderId;
+        const updatedOrder = req.body;
+        console.log(updatedOrder);
+        editOrderData(id, updatedOrder)
+        .then((response) => {
+            console.log(response.data['order'].line_items);
+            res.json(response.data['order'])
+        })
+        .catch((er) => {
+            console.log(er.response);
+            res.status(500).send(er);
+        })
+
+
     })
     .delete((req, res) => {
 

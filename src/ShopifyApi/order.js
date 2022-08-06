@@ -19,8 +19,7 @@ const passsword = "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"//iti-ism
 
 function addNewOrder(myOrder) {
 
-        console.log(myOrder);
-
+    // console.log(myOrder);
     const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-07/${resource}.json`
     return axios(
         {
@@ -37,22 +36,28 @@ function addNewOrder(myOrder) {
     )
 }
 
-function editOrderData(id, updatedOrder) {
+/**
+ * NOT WORKING
+ * @param {*} id 
+ * @returns 
+ */
+// function editOrderData(id, updatedOrder) {
 
-    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}/${id}.json`
-    return axios(
-        {
-            method: 'put',
-            url: apiUrl,
-            headers: {
-                "content-type": "application/json, charset=utf-8",
-                'X-Shopify-Access-Token': `${token}`,
-            },
-            data:  updatedOrder
-            
+//     const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}/${id}.json`
+//     return axios(
+//         {
+//             method: 'put',
+//             url: apiUrl,
+//             headers: {
+//                 "content-type": "application/json, charset=utf-8",
+//                 'X-Shopify-Access-Token': `${token}`,
+//             },
+//             data: {
 
-        })
-}
+//                 order: updatedOrder
+//             }
+//         })
+// }
 
 
 function getOrderById(id) {
@@ -106,11 +111,6 @@ function deleteOrderById(id) {
 
 }
 
-function applyDiscount() {
-
-
-}
-
 /**
  * 
  * @param {*} customerId 
@@ -122,48 +122,31 @@ function applyDiscount() {
 function createOrder(orderDetails, discounts, lineItems) {
 
 
-    // const orderToken = createUniqToken();
-    // const cartToken = createUniqToken();
-    // const orderDiscounts = createDiscount(discounts);
-    const orderLineItems = createLineItems(lineItems);
-    // const cancel_reason = orderDetails.cancel_reason !== undefined ? orderDetails.cancel_reason : "";
-    // const cart_token = cartToken;
-    // const token = orderToken;
 
-    // const client_details = orderDetails.client_details !== undefined ? orderDetails.client_details : {};
+    const orderLineItems = createLineItems(lineItems);
+
     const currency = orderDetails?.currency !== undefined ? orderDetails?.currency : Settings.Currency;
-    // const current_total_discounts = orderDetails?.current_total_discounts !== undefined ? orderDetails?.current_total_discounts : "";
-    // const current_total_price = orderDetails?.current_total_price !== undefined ? orderDetails?.current_total_price : "";
     const customer = orderDetails?.customer !== undefined ? orderDetails?.customer : {};
-    // const discount_applications = orderDiscounts?.discount_applications !== undefined ? orderDiscounts?.discount_applications : [];
-    // const discount_codes = orderDiscounts?.discount_codes !== undefined ? orderDiscounts?.discount_codes : [];
     const _line_items = orderLineItems !== undefined ? lineItems : [];
     const payment_terms = orderDetails?.payment_terms !== undefined ? orderDetails?.payment_terms : [];
-    // const total_discounts = orderDetails?.total_discounts !== undefined ? orderDetails?.total_discounts : "";
-    // const total_price = orderDetails?.total_price !== undefined ? orderDetails?.total_price : "";
-
+   
     const order = {
-        // cancel_reason,
-        // cart_token,
-        // token,
         currency,
-        // current_total_discounts,
-        // current_total_price,
         customer,
-        discount_applications :
-        [
-            {
-                type: "discount_code",
-                code: discounts?.code !== undefined? discounts?.discount_code : "123456",
-                value: discounts?.value !== undefined ? discounts?.discount_value : "0.0",
-                value_type: "fixed_amount",
-                allocation_method: "across",
-                target_selection: "all",
-                target_type: "line_item",
-            }
-        ], 
+        discount_applications:
+            [
+                {
+                    type: "discount_code",
+                    code: discounts?.code !== undefined ? discounts?.code : "123456",
+                    value: discounts?.value !== undefined ? discounts?.value : "0.0",
+                    value_type: "fixed_amount",
+                    allocation_method: "across",
+                    target_selection: "all",
+                    target_type: "line_item",
+                }
+            ],
         // discount_codes,
-        line_items:  [_line_items],
+        line_items: _line_items,
         payment_terms,
         // total_discounts,
         // total_price
@@ -173,34 +156,6 @@ function createOrder(orderDetails, discounts, lineItems) {
     console.log(order);
     return order;
 }
-
-// function createDiscount(discount_code, discount_value) {
-
-//     const discount_applications =
-//         [
-//             {
-//                 type: "discount_code",
-//                 code: discount_code !== undefined? discount_code : "123456",
-//                 value: discount_value !== undefined ? discount_value : "0.0",
-//                 value_type: "fixed_amount",
-//                 allocation_method: "across",
-//                 target_selection: "all",
-//                 target_type: "line_item",
-//             }
-//         ];
-//     // const discount_codes =
-//     //     [
-//     //         {
-//     //             amount: discountDetails?.discount_codes?.amount !== undefined ? discountDetails?.discount_codes?.amount : "",
-//     //             code: discountDetails?.discount_codes?.code !== undefined ? discountDetails?.discount_codes?.code : "",
-//     //             type: "fixed_amount",
-//     //         }
-//     //     ]
-//     return  discount_applications
-//     // {
-//     //     discount_codes
-//     // }
-// }
 
 function createLineItems(lineItemsDetails) {
 
@@ -214,28 +169,28 @@ function createLineItems(lineItemsDetails) {
     const vendor = lineItemsDetails?.vendor !== undefined ? lineItemsDetails?.vendor : "";
 
     return {
-            price,
-            product_id,
-            quantity,
-            title,
-            variant_id,
-            variant_title,
-            vendor
-        }
-    
+        price,
+        product_id,
+        quantity,
+        title,
+        variant_id,
+        variant_title,
+        vendor
+    }
+
 }
 
-function addLineItemToOrder(product,  lineItem = {price :String, product_id : Number, quantity : Number, title : String, variant_id : String,
-    variant_title : String, vendor:String}){
+/**
+ * NOT WORKING 
+ * @param {*} lineItemId 
+ */
+// function addLineItemToOrder(product,  lineItem = {price :String, product_id : Number, quantity : Number, title : String, variant_id : String,
+//     variant_title : String, vendor:String}){
 
-        product.line_items.push(lineItem);
-        return product;
-}
+//         product.line_items.push(lineItem);
+//         return product;
+// }
 
-function removeProductFromOrder(lineItemId){
-
-    
-}
 
 /***************************************** FrontEnd Functions *******************************************/
 
@@ -253,11 +208,14 @@ function getOrder(id) {
         url: `/orders/${id}`,
     })
 }
-function addOrder(order = {currency:String,  customer : {}},
-    discounts = { code : String, value : String, },
-     lineItems = {price :String, product_id : Number, quantity : Number, title : String, variant_id : String,
-         variant_title : String, vendor:String}){
-        const myOrder = createOrder(order, discounts, lineItems);
+function addOrder(order = { currency: String, customer: {} },
+    discounts = { code: String, value: String, },
+    lineItems = [{
+        price: String, product_id: Number, quantity: Number, title: String, variant_id: String,
+        variant_title: String, vendor: String
+    }]
+    ) {
+    const myOrder = createOrder(order, discounts, lineItems);
     return axios({
         method: 'post',
         url: '/orders/',
@@ -265,16 +223,23 @@ function addOrder(order = {currency:String,  customer : {}},
     })
 
 }
-function updateOrder(id, updatedOrder) {
+/**
+ * NOT Working 
+ * @param {*} id 
+ * @param {*} updatedOrder 
+ * @returns 
+ */
+// function updateOrder(id, updatedOrder) {
 
-    return axios({
+//     return axios({
 
-        method: 'put',
-        url: `/orders/${id}`,
-        data: updatedOrder,
+//         method: 'put',
+//         url: `/orders/${id}`,
+//         data: updatedOrder,
 
-    })
-}
+//     })
+// }
+
 function deleteOrder(id) {
     axios({
         method: 'delete',
@@ -284,8 +249,7 @@ function deleteOrder(id) {
 }
 
 export {
-    addNewOrder, editOrderData, deleteOrder, getAllOrders, getOrder, createOrder, addOrder, updateOrder,
-    getOrderById, deleteOrderById, getOrders,
+    addNewOrder, deleteOrder, getAllOrders, getOrder, createOrder, addOrder, getOrderById, deleteOrderById, getOrders,
 }
 
 

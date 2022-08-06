@@ -2,12 +2,9 @@
  * this file for customer operattions
  */
 import axios from "axios";
-import dotenv from 'dotenv'
 import { CURRENCIES } from "./settings.js";
 
-dotenv.config();
 
-const { SHOPIFY_KEY, SHOPIFY_SECRET_KEY } = process.env;
 const shop = 'iti-ism';
 const version = "2022-07";
 const resource = "customers";
@@ -24,7 +21,7 @@ const passsword = "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"//iti-ism
  */
 function addNewCustomer(customer) {
 
-    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-07/${resource}.json`
+    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/${version}/${resource}.json`
     // console.log({...customer});
     return axios(
         {
@@ -45,7 +42,7 @@ function addNewCustomer(customer) {
 
 function editCustomerData(id, updatedCustomer) {
 
-    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}/${id}.json`
+    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/${version}/${resource}/${id}.json`
     return axios(
         {
             method: 'put',
@@ -62,9 +59,9 @@ function editCustomerData(id, updatedCustomer) {
 
 }
 
-function deleteCustomer(id) {
+function deleteCustomerById(id) {
 
-    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}/${id}.json`
+    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/${version}/${resource}/${id}.json`
     return axios(
         {
             method: 'delete',
@@ -78,9 +75,9 @@ function deleteCustomer(id) {
 
 }
 
-function getCustomer(id) {
+function getCustomerById(id) {
 
-    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}/${id}.json`
+    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/${version}/${resource}/${id}.json`
     return axios(
         {
             method: 'get',
@@ -95,7 +92,7 @@ function getCustomer(id) {
 
 function getAllCustomers() {
 
-    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}.json`
+    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/${version}/${resource}.json`
     return axios(
         {
             method: 'get',
@@ -140,14 +137,54 @@ function createNewCustomer(customerDetails) {
 }
 function createCustomerAddress(addressDetails) {
 
-    const address1 = customerDetails.address1 !== undefined ? customerDetails.address1 : "";
-    const city = customerDetails.city !== undefined ? customerDetails.city : "";
-    const country_name = customerDetails.country_name !== undefined ? customerDetails.country_name : "";
-    const company = customerDetails.company !== undefined ? customerDetails.company : "";
+    const address1 = addressDetails.address1 !== undefined ? addressDetails.address1 : "";
+    const city = addressDetails.city !== undefined ? addressDetails.city : "";
+    const country_name = addressDetails.country_name !== undefined ? addressDetails.country_name : "";
+    const company = addressDetails.company !== undefined ? addressDetails.company : "";
 
 }
 
+/********************************** Front End functions **********************************************/
+
+function getCustomer(id){
+    return axios({
+        method:'get', 
+        url:`/customers/${id}/`
+    })
+
+}   
+function getCustomers(){
+    return axios({
+        method:'get', 
+        url:`/customers/`
+    })
+} 
+function addCustomer(_customer){
+    return axios({
+        method:'post', 
+        url:`/customers/`, 
+        data:{
+            customer: _customer, 
+        }
+
+    })
+}
+function updateCustomer(id, updatedCustomer){
+    return axios({
+        method:'put', 
+        url:`/customers/${id}`, 
+        data:  updatedCustomer, 
+    })
+}
+function deleteCustomer(id){
+    return axios({
+        method:'delete', 
+        url:`/customers/${id}`,   
+    })
+}
+
 export {
-    addNewCustomer, deleteCustomer, updateCustomerSpent, updateEmailState, updateOrdersCount, getAllCustomers
-    , getCustomer, editCustomerData
+     deleteCustomer, updateCustomerSpent, updateEmailState, updateOrdersCount, getAllCustomers, addNewCustomer
+    , getCustomer, editCustomerData, getCustomerById, getCustomers, updateCustomer, deleteCustomerById, addCustomer, 
+    
 }

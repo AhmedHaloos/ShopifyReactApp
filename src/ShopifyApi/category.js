@@ -2,11 +2,8 @@
  * this file for customer operattions
  */
  import axios from "axios";
- import dotenv from 'dotenv'
  
- dotenv.config();
  
- const { SHOPIFY_KEY, SHOPIFY_SECRET_KEY } = process.env;
  const shop = 'iti-ism';
  const version = "2022-07";
  const resource = "custom_collections";
@@ -15,21 +12,11 @@
  const passsword = "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"//iti-ism
  
 
- function addNewCategory(catTitle, catImage ={src:"",widht:500, height : 500, alt : 'Brand Image' }){
+ function addNewCategory(category){
 
 
     const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-07/${resource}.json`
-    const category  = {
-        
-        title: catTitle ,
-        image: {
-          src: catImage.src,
-          alt: catImage.alt,
-          width: catImage.widht,
-          height: catImage.height,
-        }, 
-      }
-
+  
       return axios(
         {
  
@@ -42,6 +29,28 @@
             data: { custom_collection : {...category} }
         }
     )
+ }
+ function editCategory(id, updatedCategory){
+
+    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}/${id}.json`;
+    return axios({
+
+        method: 'put', 
+        url: apiUrl, 
+        data:{
+            custom_collection : updatedCategory, 
+        }
+    })
+
+ }
+
+ function deleteCategoryById(id){
+
+    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}/${id}.json`;
+    return axios({
+        method: 'delete', 
+        url: apiUrl, 
+    })
  }
 
 function getCategoryById(catId){
@@ -115,5 +124,68 @@ function addProductToCategory(productId, catId){
         })
  }
  
+/************************************ FrontEnd functions ********************************************/
+/**
+ * 
+ * @param {*} _collection 
+ * @returns 
+ */
+function addCategory(_collection){
 
-export {getAllCategories, addNewCategory, addProductToCategory, getAllCollects, getCategoryById}
+    return  axios({
+        method:'post', 
+        url : '/collections/', 
+        data : {
+            collection : _collection
+        }
+    })
+}/**
+ * 
+ * @param {*} id 
+ * @param {*} updatedCategory 
+ * @returns 
+ */
+function updateCategory(id, updatedCategory){
+
+    return axios({
+        method : "put", 
+        url:`/collections/${id}`, 
+        data: updatedCategory
+    })
+}/**
+ * 
+ * @param {*} id 
+ * @returns 
+ */
+function deleteCategory(id){
+
+    return axios({
+        method:"delete", 
+        url:`/collections/${id}`, 
+    })
+}
+/**
+ * 
+ * @param {*} id 
+ * @returns 
+ */
+function getCategory(id){
+
+    return axios({
+        method:'get', 
+        url:`/collections/${id}`, 
+    })
+}
+/**
+ * 
+ * @returns 
+ */
+function getCategories(){
+    return axios({
+        method:'get', 
+        url:`/collections/`, 
+    })
+}
+
+export {getAllCategories, addNewCategory, addProductToCategory, getAllCollects, getCategoryById, getCategories, 
+        getCategory, addCategory, updateCategory, deleteCategory, deleteCategoryById, editCategory}

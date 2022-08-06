@@ -2,12 +2,10 @@
  * this file for product operattions
  */
 import axios from "axios";
-import dotenv from 'dotenv';
+
 import { getAllCollects } from './category.js'
 
-dotenv.config();
 
-const { SHOPIFY_KEY, SHOPIFY_SECRET_KEY } = process.env;
 const shop = 'iti-ism';
 const version = "2022-07";
 const resource = "products";
@@ -30,16 +28,12 @@ async function addNewProduct(product) {
         },
         data: {
 
-            product: {
-
-                title,
-                images,
-            }
+            product: product
         }
     })
 }
 
-function editProductData(id, updatedProduct) {
+function editProductData(id, /* object contain the product id and any other properties to be updated */ updatedProduct) {
 
     const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}/${id}.json`
     return axios(
@@ -51,7 +45,7 @@ function editProductData(id, updatedProduct) {
                 'X-Shopify-Access-Token': `${token}`,
             },
             data: {
-                product: { ...updatedProduct }
+                product: {...updatedProduct}
             }
 
         })
@@ -60,7 +54,19 @@ function editProductData(id, updatedProduct) {
 
 }
 
-function deleteProduct(id) {
+
+function addProductImage(productId, newImage){
+
+    return axios({
+        method:'post', 
+        url: `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}/${productId}/images.json`, 
+        data : {
+            image : newImage,   
+        }
+    })
+}
+
+function deleteProductById(id) {
 
 
     const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}/${id}.json`
@@ -112,8 +118,12 @@ function getAllProducts() {
 }
 
 
-function addImagesToProduct(images) {
-
+function getProductImages(productId) {
+ const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}/${productId}/images.json`;
+    return axios({
+        method : 'get', 
+        url: apiUrl, 
+    })
 
 }
 
@@ -137,16 +147,16 @@ function createNewProduct(productDetails, productVariants) {
     }
 }
 
-function createNewVariant(vaiantDetails) {
+function createNewVariant(variantDetails) {
 
     // price, title, productId, imageId, 
 
-    const prodPrice = vaiantDetails.price !== undefined ? vaiantDetails.price : "0.0";
-    const prodTitle = vaiantDetails.title !== undefined ? vaiantDetails.title : "";
-    const productId = vaiantDetails.product_id !== undefined ? vaiantDetails.product_id : 0;
-    const imageId = vaiantDetails.image_id !== undefined ? vaiantDetails.image_id : 0;
-    const prodPosition = vaiantDetails.position !== undefined ? vaiantDetails.position : 0;
-    const prodWwight = vaiantDetails.weight !== undefined ? vaiantDetails.weight : 0;
+    const prodPrice = variantDetails.price !== undefined ? variantDetails.price : "0.0";
+    const prodTitle = variantDetails.title !== undefined ? variantDetails.title : "";
+    const productId = variantDetails.product_id !== undefined ? variantDetails.product_id : 0;
+    const imageId = variantDetails.image_id !== undefined ? variantDetails.image_id : 0;
+    const prodPosition = variantDetails.position !== undefined ? variantDetails.position : 0;
+    const prodWwight = variantDetails.weight !== undefined ? variantDetails.weight : 0;
 
     return [
         {
@@ -165,9 +175,95 @@ function createNewVariant(vaiantDetails) {
 function addNewVariant(product, variant) {
 
     product.variants.push(variant);
-return product;
+    return product;
 }
 
+/*************************************** FrontEnd Functions*************************************************/
 
+/**
+ * 
+ * @returns 
+ */
 
-export { getAllProducts, addNewProduct, getProductById, deleteProduct, editProductData }
+function getProducts() {
+
+    return axios({
+
+        method: 'get',
+        url: '/products'
+    })
+}
+/**
+ * 
+ * @param {*} id 
+ * @returns 
+ */
+function getProduct(id){
+
+    return axios({
+
+        method:'get', 
+        url:`/products/${id}`
+    })
+}
+/**
+ * 
+ * @param {*} product 
+ * @returns 
+ */
+function addProduct(_product){
+
+  return  axios({
+
+        method:'post', 
+        url:'/products/', 
+        data:{
+            product: _product, 
+        }
+    })
+}
+
+function deleteProduct(id){
+
+   return axios({
+        method:'delete', 
+        url:`/products/:${id}`, 
+    })
+}
+
+function updateProduct(id, updatedProduct){
+
+   return  axios({
+        method:'put', 
+        url:`/products/${id}`, 
+        data: updatedProduct
+    })
+}
+function getImages(productId){
+    return axios({
+        method:'get',
+        url: `/products/${productId}/images`, 
+    })
+}
+function addImage(productId, _src, _width, _height, _alt){
+
+    return axios({
+
+        method:'post', 
+        url:`/products/${productId}/images`, 
+        data:{
+            image: {
+                product_id: productId, 
+                src : _src, 
+                width: _width,
+                height : _height ,
+                alt : _alt
+            }, 
+        }
+    })
+
+}
+
+export { getAllProducts, addNewProduct, getProductById, deleteProduct, editProductData, deleteProductById,
+        getProduct, updateProduct, addProduct, getProducts, createNewProduct, createNewVariant, addNewVariant ,
+         addProductImage, getProductImages, getImages, addImage}

@@ -1,7 +1,14 @@
-const { default: axios } = require('axios');
-const express = require ('express');
+import axios from 'axios';
+import {
+    addNewProduct, addProductImage, deleteProduct, deleteProductById,
+    editProductData, getAllProducts, getProduct, getProductById, getProductImages, updateProduct
+} from './product.js';
+import express, { Router } from 'express';
+import { addNewCustomer, deleteCustomerById, getAllCustomers, getCustomer, getCustomerById } from './customer.js';
+import { addCategory, addNewCategory, deleteCategoryById, editCategory, getAllCategories, getCategories, getCategoryById } from './category.js';
+import { addNewOrder, deleteOrderById, getAllOrders, getOrderById } from './order.js';
 
-const app = express(express);
+const app = express();
 const port = 5000;
 // console.log('server express');
 
@@ -13,57 +20,310 @@ const apiKey = "f9435203660033c2fe73a34c23ffd4dd";// iti-ism
 const passsword = "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"//iti-ism
 
 
-function getAllProducts() {
 
-    const apiUrl = `https://${apiKey}:${passsword}@${shop}.myshopify.com/admin/api/2022-01/${resource}.json`
-    return axios(
-        {
-            method: 'get',
-            url: apiUrl,
-            headers: {
-                "content-type": "application/json, charset=utf-8",
-                'X-Shopify-Access-Token': `${token}`,
-            },
+app.use(express.json())
 
+/********************* products handler *******************/
+app.route('/products/')
+    .get((req, res) => {
+        getAllProducts()
+            .then((response) => {
+
+                console.log(response.data['products']);
+                res.json(response.data['products'])
+            })
+            .catch((e) => {
+                console.log(e);
+                res.status(501).send(e);
+            })
+
+    })
+    .post((req, res) => {
+        const product = req.body['product'];
+        console.log(product);
+        addNewProduct(product)
+            .then((response) => {
+                console.log(response.data);
+                res.send("Done")
+            })
+            .catch((error) => {
+                console.log(error.response);
+                res.send('Done')
+            })
+    })
+
+app.route(`/products/:productId`)
+    .get((req, res) => {
+        const id = req.params.productId;
+        console.log(id);
+        getProductById(id)
+            .then((response) => {
+                console.log(response.data['product']);
+                res.json(response.data['product']);
+            })
+            .catch((er) => {
+                console.log(er.response);
+                res.status(501).send(e);
+            })
+    })
+
+    .put((req, res) => {
+        const updatedProduct = req.body;
+        const id = req.params.productId;
+
+        editProductData(id, updatedProduct)
+            .then((response) => {
+                console.log(response.data['product'].images);
+                res.send('updated');
+            })
+            .catch((er) => {
+                console.log("er.response");
+                res.status(501).send(er);
+            })
+
+    })
+    .delete((req, res) => {
+        const id = req.params.productId;
+        console.log(id);
+        deleteProductById(id)
+            .then((response) => {
+                console.log(response.data);
+                res.send('deleted')
+            })
+            .catch((er) => {
+                console.log(er);
+                res.status(501).send(er);
+            })
+    });
+
+app.route("/products/:productId/images")
+    .get((req, res) => {
+
+        const productId = req.params.productId;
+        getProductImages(productId)
+            .then((response) => {
+                // console.log('sent');
+                res.json(response.data['images'])
+            })
+            .catch((e) => {
+                console.log(e.response);
+                res.status(501).send(e);
+            })
+    })
+    .post((req, res) => {
+        const image = req.body['image'];
+        const id = req.params.productId;
+        console.log(image);
+        console.log(req.params.productId);
+
+        addProductImage(id, image)
+            .then((response) => {
+                console.log(response.data['image']);
+                res.json(response.data['image']);
+            })
+            .catch((er) => {
+                console.log(er.response);
+                res.status(501).send(er);
+            })
+    })
+/********************* customers handler *******************/
+app.route('/customers/')
+    .get((req, res) => {
+        getAllCustomers()
+            .then((response) => {
+                console.log(response.data['customers']);
+                res.json(response.data)
+            })
+            .catch((er) => {
+                console.log();
+                res.status(500).send('error')
+            })
+    })
+    .post((req, res) => {
+
+        const custoner = req.body['customer'];
+        console.log(custoner);
+        addNewCustomer(custoner)
+            .then((response) => {
+                console.log(response.data['customer']);
+                res.json(response.data['customer'])
+            })
+            .catch((er) => {
+                console.log(er.response);
+                res.status(500).send(er);
+            })
+    })
+
+app.route('/customers/:customerId')
+    .get((req, res) => {
+        const id = req.params.customerId;
+        getCustomerById(id)
+            .then((response) => {
+
+                console.log(response.data);
+                res.json(response.data)
+            })
+            .catch((e) => {
+                console.log(e.response);
+            })
+
+    })
+    .put((req, res) => {
+
+        const id = req.params.customerId;
+        const updatedCustomer = req.body;
+        console.log(id);
+        console.log(updatedCustomer);
+        editProductData(id, updatedCustomer)
+            .then((response) => {
+                console.log(response.data);
+                res.send("done");
+            })
+            .catch((er) => {
+                console.log(er.response);
+                res.status(500).send(er)
+            })
+    })
+    .delete((req, res) => {
+        const id = req.params.customerId;
+        deleteCustomerById(id)
+            .then((response) => {
+                console.log(response.data);
+                res.json(response.data)
+            })
+            .catch((er) => {
+                console.log(er.response);
+                res.status(500).send(er);
+            })
+    });
+/********************* orders handler *******************/
+app.route('/orders/')
+    .get((req, res) => {
+
+        getAllOrders()
+            .then((response) => {
+                console.log(response.data);
+                res.json(response.data['orders'])
+            })
+            .catch((er) => {
+                console.log(er.response);
+                res.status(500).send(er);
+            })
+    })
+    .post((req, res) => {
+
+        const order = req.body;
+        addNewOrder(order)
+        .then((response) => {
+            console.log(response.data);
+            res.json(response.data['order'])
         })
+        .catch((er) => {
+            console.log(er.response);
+            res.status(500).send(er);
+        })
+    })
 
-}
-
-
-
-app.use(async (req, res, next)=>{
-
-
-// console.log(data["data"]);
-    next();
-
-})
-app.get('/products',  (req, res)=>{
-    
-    getAllProducts()
-    .then((response)=>{
-        let products = response.data['products'];
-        console.log("*****************************************************************************************"
-        +"**********************************************************************************************");
-        console.log(products[0]);
-        res.json({
-            products:products,
+app.route('/orders/:orderId')
+    .get((req, res) => {
+        const id = req.params.orderId;
+        getOrderById(id)
+        .then((response) => {
+            console.log(response.data);
+            res.json(response.data['order'])
+        })
+        .catch((er) => {
+            console.log(er.response);
+            res.status(500).send(er);
         })
 
     })
-    .catch((e)=>{
-            console.error(e.response);
-            res.send('error')
+    .put((req, res) => {
+
     })
-})
+    .delete((req, res) => {
 
-app.get('/customers', (req, res)=>{
+        const id = req.params.orderId;
+        deleteOrderById(id)
+        .then((response) => {
+            console.log(response.data);
+            res.json(response.data)
+        })
+        .catch((er) => {
+            console.log(er.response);
+            res.status(500).send(er);
+        })
 
-    res.send('customers')
+    });
 
-})
+/********************* category handler *******************/
+app.route('/collections/')
+    .get((req, res) => {
 
-app.listen(port, ()=>{
+        getAllCategories()
+            .then((response) => {
+                console.log(response.data['custom_collections']);
+                res.json(response.data['custom_collections']);
+            })
+            .catch((er) => {
+                console.log(er.response);
+                res.status(501).send(wer.response)
+            })
+    })
+    .post((req, res) => {
+        const category = req.body['collection'];
+        addNewCategory(category)
+            .then((response) => {
+                console.log(response.data["custom_collection"]);
+                res.json(response.data["custom_collection"]);
+            })
+            .catch((er) => {
+                console.log(er.response);
+                res.status(501).send(er.response)
+            })
+    })
+
+app.route('/collections/:catId')
+    .get((req, res) => {
+        const id = req.params.catId;
+        getCategoryById(id)
+            .then((response) => {
+                console.log(response.data["custom_collection"]);
+                res.json(response.data["custom_collection"]);
+            })
+            .catch((er) => {
+                console.log(er.response);
+                res.status(501).send(er.response)
+            })
+    })
+    .put((req, res) => {
+        const id = req.params.catId;
+        const updatedCategory = req.body;
+        editCategory(id, updatedCategory)
+            .then((response) => {
+                console.log(response.data['custom_collection']);
+                res.send(response.data['custom_collection'])
+            })
+            .catch((er) => {
+                console.log(er.response);
+                res.status(501).send(er)
+            })
+    })
+    .delete((req, res) => {
+        const id = req.params.catId;
+        console.log("done!");
+        deleteCategoryById(id)
+            .then((response) => {
+                console.log(response.data['custom_collection']);
+                res.send('Done!')
+            })
+            .catch((er) => {
+                console.log(er.response);
+                res.status(501).send(er)
+            })
+    });
+/******************* port listener *******************************/
+app.listen(port, () => {
 
     console.log(`listeneing to port ${port}`);
 })
